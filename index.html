@@ -6,7 +6,6 @@
     <title>Winter Global Clicker</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
-    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -39,10 +38,7 @@
         :root {
             --primary: #5bc0de;
             --primary-glow: rgba(91, 192, 222, 0.4);
-            --dark: #1e3c72;
-            --light: #ffffff;
             --danger: #ff4b2b;
-            --success: #00b894;
             --glass: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(255, 255, 255, 0.1);
         }
@@ -58,16 +54,14 @@
 
         body {
             background: #0f2027;
-            color: var(--light);
+            color: white;
             overflow: hidden;
             height: 100vh;
             width: 100vw;
             position: relative;
         }
 
-        /* =========================================
-           ФОН: ГОРЫ, ТУМАН, СИЯНИЕ, СНЕГ
-        ========================================= */
+        /* ФОН */
         .bg-container {
             position: absolute;
             inset: 0;
@@ -76,13 +70,10 @@
             background: linear-gradient(180deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
         }
 
-        /* Северное сияние */
         .aurora {
             position: absolute;
-            top: -20%;
-            left: -50%;
-            width: 200%;
-            height: 80%;
+            top: -20%; left: -50%;
+            width: 200%; height: 80%;
             background: radial-gradient(ellipse at center, rgba(91, 192, 222, 0.15) 0%, transparent 60%),
                         radial-gradient(ellipse at center, rgba(138, 43, 226, 0.1) 0%, transparent 50%);
             filter: blur(60px);
@@ -94,11 +85,8 @@
             100% { transform: translateX(10%) scale(1.1); opacity: 0.8; }
         }
 
-        /* Звезды */
         .stars {
-            position: absolute;
-            inset: 0;
-            z-index: 0;
+            position: absolute; inset: 0; z-index: 0;
             background-image: 
                 radial-gradient(1px 1px at 10% 10%, white, transparent),
                 radial-gradient(2px 2px at 20% 30%, white, transparent),
@@ -107,353 +95,169 @@
                 radial-gradient(1px 1px at 60% 15%, white, transparent),
                 radial-gradient(2px 2px at 70% 40%, white, transparent),
                 radial-gradient(1px 1px at 80% 60%, white, transparent),
-                radial-gradient(2px 2px at 90% 25%, white, transparent),
-                radial-gradient(1px 1px at 15% 70%, white, transparent),
-                radial-gradient(2px 2px at 50% 80%, white, transparent);
+                radial-gradient(2px 2px at 90% 25%, white, transparent);
             background-size: 200px 200px;
             opacity: 0.4;
             animation: starTwinkle 4s infinite alternate;
         }
-        @keyframes starTwinkle {
-            0% { opacity: 0.3; }
-            100% { opacity: 0.6; }
-        }
+        @keyframes starTwinkle { 0% { opacity: 0.3; } 100% { opacity: 0.6; } }
 
-        /* Горы (Параллакс) */
         .mountains {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 40%;
-            z-index: 1;
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 40%; z-index: 1;
         }
         .mountain-layer-1 {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;
             background: #182d36;
             clip-path: polygon(0% 100%, 0% 60%, 10% 40%, 20% 60%, 30% 30%, 45% 55%, 60% 20%, 75% 50%, 90% 30%, 100% 55%, 100% 100%);
             opacity: 0.8;
         }
         .mountain-layer-2 {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 80%;
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 80%;
             background: #203a43;
             clip-path: polygon(0% 100%, 0% 70%, 15% 50%, 25% 70%, 40% 40%, 55% 65%, 70% 35%, 85% 60%, 100% 50%, 100% 100%);
             opacity: 0.9;
         }
 
-        /* Туман */
         .fog {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 200%;
-            height: 30%;
+            position: absolute; bottom: 0; left: 0; width: 200%; height: 30%;
             background: linear-gradient(to top, rgba(44, 83, 100, 0.8), transparent);
             filter: blur(20px);
-            animation: fogMove 20s linear infinite;
-            z-index: 2;
+            animation: fogMove 20s linear infinite; z-index: 2;
         }
-        @keyframes fogMove {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
+        @keyframes fogMove { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        /* Контейнер для снега */
         #snow-container {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            z-index: 3;
+            position: absolute; inset: 0; pointer-events: none; z-index: 3;
         }
         .snowflake {
-            position: absolute;
-            top: -20px;
-            background: white;
-            border-radius: 50%;
-            opacity: 0.8;
-            box-shadow: 0 0 5px rgba(255,255,255,0.8);
-            animation: fall linear infinite;
+            position: absolute; top: -20px; background: white; border-radius: 50%;
+            box-shadow: 0 0 5px rgba(255,255,255,0.8); animation: fall linear infinite;
         }
-        @keyframes fall {
-            to { transform: translateY(110vh) rotate(720deg); }
-        }
+        @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
 
-        /* =========================================
-           ЗАГРУЗКА
-        ========================================= */
+        /* ЗАГРУЗКА */
         #loading-screen {
-            position: fixed;
-            inset: 0;
+            position: fixed; inset: 0;
             background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center;
             transition: opacity 0.6s ease;
         }
         .spinner {
             width: 70px; height: 70px;
-            border: 4px solid rgba(255,255,255,0.1);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
-            margin-bottom: 25px;
-            box-shadow: 0 0 20px var(--primary-glow);
+            border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--primary);
+            border-radius: 50%; animation: spin 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+            margin-bottom: 25px; box-shadow: 0 0 20px var(--primary-glow);
         }
         @keyframes spin { to { transform: rotate(360deg); } }
         .loading-text {
-            font-size: 28px;
-            font-weight: 900;
-            letter-spacing: 3px;
-            text-shadow: 0 0 10px var(--primary-glow);
-            animation: pulse 1.5s ease-in-out infinite;
+            font-size: 28px; font-weight: 900; letter-spacing: 3px;
+            text-shadow: 0 0 10px var(--primary-glow); animation: pulse 1.5s ease-in-out infinite;
         }
-        @keyframes pulse { 
-            0%, 100% { opacity: 1; transform: scale(1); } 
-            50% { opacity: 0.6; transform: scale(0.98); } 
-        }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(0.98); } }
 
-        /* =========================================
-           МЕНЮ (ГАМБУРГЕР)
-        ========================================= */
+        /* МЕНЮ */
         #menu-btn {
-            position: absolute;
-            top: 20px; left: 20px;
-            width: 50px; height: 50px;
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-            border-radius: 14px;
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            position: absolute; top: 20px; left: 20px; width: 50px; height: 50px;
+            background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--glass-border);
+            border-radius: 14px; z-index: 100; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; gap: 6px; cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-        #menu-btn:hover {
-            background: rgba(255,255,255,0.15);
-            transform: translateY(-2px);
-        }
-        #menu-btn:active { 
-            transform: scale(0.9);
-        }
+        #menu-btn:hover { background: rgba(255,255,255,0.15); transform: translateY(-2px); }
+        #menu-btn:active { transform: scale(0.9); }
         #menu-btn div {
-            width: 24px; height: 3px;
-            background: white;
-            border-radius: 3px;
-            transition: 0.3s;
-            box-shadow: 0 0 5px rgba(255,255,255,0.5);
+            width: 24px; height: 3px; background: white; border-radius: 3px;
+            transition: 0.3s; box-shadow: 0 0 5px rgba(255,255,255,0.5);
         }
         #menu-btn.open div:nth-child(1) { transform: translateY(9px) rotate(45deg); }
         #menu-btn.open div:nth-child(2) { opacity: 0; }
         #menu-btn.open div:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
 
-        /* =========================================
-           БОКОВОЕ МЕНЮ
-        ========================================= */
         #sidebar {
-            position: absolute;
-            top: 0; left: -320px;
-            width: 300px; height: 100%;
-            background: rgba(15, 32, 39, 0.95);
-            backdrop-filter: blur(25px);
-            z-index: 99;
-            transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 90px 25px 25px;
-            border-right: 1px solid var(--glass-border);
+            position: absolute; top: 0; left: -320px; width: 300px; height: 100%;
+            background: rgba(15, 32, 39, 0.95); backdrop-filter: blur(25px);
+            z-index: 99; transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 90px 25px 25px; border-right: 1px solid var(--glass-border);
             box-shadow: 10px 0 40px rgba(0,0,0,0.6);
         }
         #sidebar.open { left: 0; }
         
         .sidebar-title {
-            font-size: 14px;
-            color: rgba(255,255,255,0.5);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 15px;
-            padding-left: 10px;
+            font-size: 14px; color: rgba(255,255,255,0.5); text-transform: uppercase;
+            letter-spacing: 2px; margin-bottom: 15px; padding-left: 10px;
         }
 
         .menu-item {
-            padding: 16px 20px;
-            margin-bottom: 12px;
-            background: var(--glass);
-            border-radius: 14px;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 1px solid transparent;
-            display: flex;
-            align-items: center;
-            gap: 15px;
+            padding: 16px 20px; margin-bottom: 12px; background: var(--glass); border-radius: 14px;
+            font-size: 18px; font-weight: 700; cursor: pointer; transition: all 0.3s;
+            border: 1px solid transparent; display: flex; align-items: center; gap: 15px;
         }
         .menu-item:hover, .menu-item.active {
-            background: rgba(91, 192, 222, 0.15);
-            border-color: var(--primary);
-            transform: translateX(8px);
-            box-shadow: 0 0 20px var(--primary-glow);
+            background: rgba(91, 192, 222, 0.15); border-color: var(--primary);
+            transform: translateX(8px); box-shadow: 0 0 20px var(--primary-glow);
         }
-        .menu-item svg {
-            width: 24px; height: 24px;
-            fill: white;
-            opacity: 0.8;
-        }
+        .menu-item svg { width: 24px; height: 24px; fill: white; opacity: 0.8; }
 
-        /* =========================================
-           ЭКРАНЫ
-        ========================================= */
+        /* ЭКРАНЫ */
         .screen {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s ease, transform 0.4s ease;
-            transform: translateY(20px);
-            z-index: 10;
+            position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center;
+            padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.4s ease, transform 0.4s ease;
+            transform: translateY(20px); z-index: 10;
         }
-        .screen.active {
-            opacity: 1;
-            pointer-events: all;
-            transform: translateY(0);
-        }
+        .screen.active { opacity: 1; pointer-events: all; transform: translateY(0); }
 
-        /* =========================================
-           КЛИКЕР
-        ========================================= */
-        #clicker-screen {
-            justify-content: center;
-        }
+        /* КЛИКЕР */
+        #clicker-screen { justify-content: center; }
         
         .hp-container {
-            position: absolute;
-            top: 25px;
-            width: 90%;
-            max-width: 400px;
-            background: rgba(0,0,0,0.6);
-            border-radius: 25px;
-            border: 2px solid rgba(255,255,255,0.1);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 0 10px rgba(0,0,0,0.5);
-            overflow: hidden;
-            z-index: 20;
+            position: absolute; top: 25px; width: 90%; max-width: 400px;
+            background: rgba(0,0,0,0.6); border-radius: 25px; border: 2px solid rgba(255,255,255,0.1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5); overflow: hidden; z-index: 20;
         }
-        
-        .hp-bar-bg {
-            height: 36px;
-            width: 100%;
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
+        .hp-bar-bg { height: 36px; width: 100%; position: relative; display: flex; align-items: center; }
         .hp-bar-fill {
-            position: absolute;
-            top: 0; left: 0;
-            height: 100%;
-            background: linear-gradient(90deg, #ff416c, #ff4b2b);
-            width: 100%;
-            transition: width 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 0 20px rgba(255, 75, 43, 0.6);
-            z-index: 1;
+            position: absolute; top: 0; left: 0; height: 100%;
+            background: linear-gradient(90deg, #ff416c, #ff4b2b); width: 100%;
+            transition: width 0.15s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 20px rgba(255, 75, 43, 0.6); z-index: 1;
         }
-        
         .hp-bar-fill::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(rgba(255,255,255,0.2) 0%, transparent 50%, rgba(0,0,0,0.1) 100%);
         }
-
         .hp-text {
-            position: relative;
-            z-index: 2;
-            width: 100%;
-            text-align: center;
-            font-size: 15px;
-            font-weight: 900;
-            text-shadow: 1px 1px 3px black, 0 0 10px black;
+            position: relative; z-index: 2; width: 100%; text-align: center;
+            font-size: 15px; font-weight: 900; text-shadow: 1px 1px 3px black, 0 0 10px black;
         }
 
         .character-container {
-            width: 85vw;
-            max-width: 450px;
-            height: 65vh;
-            max-height: 550px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            position: relative;
-            transition: transform 0.08s ease;
-            z-index: 15;
+            width: 85vw; max-width: 450px; height: 65vh; max-height: 550px;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; position: relative; transition: transform 0.08s ease; z-index: 15;
         }
+        .character-container:active { transform: scale(0.93); }
         
-        .character-container:active {
-            transform: scale(0.93);
-        }
-
         .character-glow {
-            position: absolute;
-            width: 80%;
-            height: 80%;
+            position: absolute; width: 80%; height: 80%;
             background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
-            filter: blur(30px);
-            z-index: -1;
-            animation: pulseGlow 3s infinite alternate;
+            filter: blur(30px); z-index: -1; animation: pulseGlow 3s infinite alternate;
         }
-        @keyframes pulseGlow {
-            0% { opacity: 0.4; transform: scale(1); }
-            100% { opacity: 0.8; transform: scale(1.1); }
-        }
+        @keyframes pulseGlow { 0% { opacity: 0.4; transform: scale(1); } 100% { opacity: 0.8; transform: scale(1.1); } }
 
         .character-container img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
+            max-width: 100%; max-height: 100%; object-fit: contain;
             filter: drop-shadow(0 20px 30px rgba(0,0,0,0.7));
-            animation: float 4s ease-in-out infinite;
-            position: relative;
-            z-index: 2;
-            transition: filter 0.5s;
+            animation: float 4s ease-in-out infinite; position: relative; z-index: 2; transition: filter 0.5s;
         }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(1deg); }
-        }
+        @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-20px) rotate(1deg); } }
 
-        /* Эффекты урона */
+        /* УРОН */
         .damage-text {
-            position: absolute;
-            color: #fff;
-            font-weight: 900;
-            font-size: 32px;
+            position: absolute; color: #fff; font-weight: 900; font-size: 32px;
             text-shadow: 0 0 10px var(--danger), 0 0 20px var(--danger), 2px 2px 0 black;
-            pointer-events: none;
-            animation: floatUp 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-            z-index: 50;
+            pointer-events: none; animation: floatUp 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; z-index: 50;
         }
         .damage-crit {
-            color: #ffd700;
-            font-size: 42px;
+            color: #ffd700; font-size: 42px;
             text-shadow: 0 0 15px #ffd700, 0 0 30px #ff8c00, 2px 2px 0 black;
         }
         @keyframes floatUp {
@@ -463,255 +267,114 @@
         }
         
         .dead-message {
-            position: absolute;
-            font-size: 22px;
-            font-weight: 900;
-            color: white;
-            text-shadow: 0 0 10px black;
-            background: rgba(255, 75, 43, 0.9);
-            padding: 12px 24px;
-            border-radius: 15px;
-            border: 2px solid rgba(255,255,255,0.3);
-            pointer-events: none;
-            animation: popMsg 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 60;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            position: absolute; font-size: 22px; font-weight: 900; color: white;
+            text-shadow: 0 0 10px black; background: rgba(255, 75, 43, 0.9);
+            padding: 12px 24px; border-radius: 15px; border: 2px solid rgba(255,255,255,0.3);
+            pointer-events: none; animation: popMsg 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 60; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
-        @keyframes popMsg { 
-            0% { transform: scale(0.3); opacity: 0; } 
-            100% { transform: scale(1); opacity: 1; } 
-        }
+        @keyframes popMsg { 0% { transform: scale(0.3); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* =========================================
-           ПРОФИЛЬ
-        ========================================= */
-        #profile-screen {
-            padding-top: 40px;
-        }
-        
+        /* ПРОФИЛЬ */
+        #profile-screen { padding-top: 40px; }
         .profile-card {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 28px;
-            padding: 35px 25px;
-            width: 90%;
-            max-width: 360px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            box-shadow: 0 15px 45px rgba(0,0,0,0.4);
-            position: relative;
-            overflow: hidden;
+            background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--glass-border);
+            border-radius: 28px; padding: 35px 25px; width: 90%; max-width: 360px;
+            display: flex; flex-direction: column; align-items: center;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.4); position: relative; overflow: hidden;
         }
-        
         .profile-card::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
             background: conic-gradient(from 0deg, transparent, var(--primary-glow), transparent, var(--primary-glow), transparent);
-            animation: rotateBorder 6s linear infinite;
-            z-index: 0;
+            animation: rotateBorder 6s linear infinite; z-index: 0;
         }
         @keyframes rotateBorder { 100% { transform: rotate(360deg); } }
-        
-        .profile-card > * {
-            position: relative;
-            z-index: 1;
-        }
+        .profile-card > * { position: relative; z-index: 1; }
 
-        .avatar-container {
-            position: relative;
-            margin-bottom: 20px;
-        }
-        
+        .avatar-container { position: relative; margin-bottom: 20px; }
         .avatar {
-            width: 110px; height: 110px;
-            border-radius: 50%;
-            background: #1a2f38;
-            border: 4px solid var(--primary);
-            display: flex; 
-            justify-content: center; 
-            align-items: center;
-            font-size: 40px;
-            overflow: hidden;
-            box-shadow: 0 0 25px var(--primary-glow);
-            transition: transform 0.3s;
+            width: 110px; height: 110px; border-radius: 50%; background: #1a2f38;
+            border: 4px solid var(--primary); display: flex; justify-content: center; align-items: center;
+            font-size: 40px; overflow: hidden; box-shadow: 0 0 25px var(--primary-glow); transition: transform 0.3s;
         }
         .avatar:hover { transform: scale(1.05); }
         .avatar img { width: 100%; height: 100%; object-fit: cover; }
         
         .username { 
-            font-size: 26px; 
-            margin-bottom: 30px; 
-            font-weight: 900;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            font-size: 26px; margin-bottom: 30px; font-weight: 900; letter-spacing: 1px; text-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
         
         .castle-btn {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 16px;
-            color: white;
-            font-size: 18px;
-            font-weight: 900;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            width: 100%; padding: 16px; background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 16px; color: white;
+            font-size: 18px; font-weight: 900; cursor: pointer; transition: all 0.3s;
+            display: flex; justify-content: center; align-items: center; gap: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
-        
         .castle-btn:hover {
             background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3), 0 0 15px var(--primary-glow);
+            transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.3), 0 0 15px var(--primary-glow);
         }
-        
         .castle-btn:active { transform: scale(0.96); }
-        
-        .castle-btn svg {
-            width: 24px; height: 24px;
-            fill: currentColor;
-        }
+        .castle-btn svg { width: 24px; height: 24px; fill: currentColor; }
 
-        /* =========================================
-           МОДАЛЬНЫЕ ОКНА (АДМИНКА)
-        ========================================= */
+        /* МОДАЛКИ */
         .modal-overlay {
-            position: fixed; inset: 0;
-            background: rgba(5, 15, 20, 0.85);
-            backdrop-filter: blur(8px);
-            z-index: 1000;
-            display: flex; justify-content: center; align-items: center;
+            position: fixed; inset: 0; background: rgba(5, 15, 20, 0.85); backdrop-filter: blur(8px);
+            z-index: 1000; display: flex; justify-content: center; align-items: center;
             opacity: 0; pointer-events: none; transition: opacity 0.35s ease;
         }
-        
         .modal-overlay.active { opacity: 1; pointer-events: all; }
         
         .modal {
-            background: linear-gradient(160deg, #1e3c72, #162836);
-            padding: 30px 25px;
-            border-radius: 24px;
-            width: 90%; max-width: 380px;
-            border: 1px solid var(--glass-border);
+            background: linear-gradient(160deg, #1e3c72, #162836); padding: 30px 25px; border-radius: 24px;
+            width: 90%; max-width: 380px; border: 1px solid var(--glass-border);
             box-shadow: 0 20px 60px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1);
-            transform: scale(0.85) translateY(20px);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: scale(0.85) translateY(20px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        
-        .modal-overlay.active .modal { 
-            transform: scale(1) translateY(0); 
-        }
+        .modal-overlay.active .modal { transform: scale(1) translateY(0); }
 
         .modal h2 { 
-            margin-bottom: 25px; 
-            text-align: center; 
-            font-size: 24px;
-            font-weight: 900;
-            letter-spacing: 1px;
-            color: var(--primary);
-            text-shadow: 0 0 15px var(--primary-glow);
+            margin-bottom: 25px; text-align: center; font-size: 24px;
+            font-weight: 900; letter-spacing: 1px; color: var(--primary); text-shadow: 0 0 15px var(--primary-glow);
         }
         
-        .modal label {
-            font-size: 14px; 
-            margin-bottom: 8px; 
-            display: block;
-            color: rgba(255,255,255,0.7);
-            font-weight: 700;
+        .modal label { 
+            font-size: 14px; margin-bottom: 8px; display: block; color: rgba(255,255,255,0.7); font-weight: 700;
         }
 
         .modal input {
-            width: 100%; 
-            padding: 14px 16px;
-            margin-bottom: 20px;
-            background: rgba(0,0,0,0.4);
-            border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            color: white; 
-            font-size: 16px; 
-            font-weight: 700;
-            outline: none;
-            transition: border-color 0.3s, box-shadow 0.3s;
+            width: 100%; padding: 14px 16px; margin-bottom: 20px; background: rgba(0,0,0,0.4);
+            border: 2px solid rgba(255,255,255,0.1); border-radius: 12px;
+            color: white; font-size: 16px; font-weight: 700; outline: none; transition: border-color 0.3s, box-shadow 0.3s;
         }
-        
-        .modal input:focus { 
-            border-color: var(--primary); 
-            box-shadow: 0 0 15px var(--primary-glow);
-        }
+        .modal input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
         
         .modal button {
-            width: 100%; 
-            padding: 15px;
-            background: linear-gradient(135deg, var(--primary), #3a9bbd);
-            border: none; 
-            border-radius: 12px;
-            color: white; 
-            font-size: 18px; 
-            font-weight: 900;
-            cursor: pointer; 
-            margin-bottom: 12px;
-            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%; padding: 15px; background: linear-gradient(135deg, var(--primary), #3a9bbd);
+            border: none; border-radius: 12px; color: white; font-size: 18px; font-weight: 900;
+            cursor: pointer; margin-bottom: 12px; transition: transform 0.2s, box-shadow 0.2s;
             box-shadow: 0 5px 15px rgba(91, 192, 222, 0.3);
         }
-        
-        .modal button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(91, 192, 222, 0.5);
-        }
-        
+        .modal button:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(91, 192, 222, 0.5); }
         .modal button:active { transform: scale(0.96); }
         
         .modal button.close-btn { 
-            background: rgba(255,255,255,0.08);
-            box-shadow: none;
-            color: rgba(255,255,255,0.7);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.08); box-shadow: none;
+            color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.1);
         }
-        .modal button.close-btn:hover {
-            background: rgba(255,255,255,0.15);
-            color: white;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
+        .modal button.close-btn:hover { background: rgba(255,255,255,0.15); color: white; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
 
-        .admin-images {
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
-            gap: 12px; 
-            margin-bottom: 20px;
-        }
-        
+        .admin-images { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
         .admin-images img {
-            width: 100%; 
-            height: 70px; 
-            object-fit: contain;
-            background: rgba(0,0,0,0.4); 
-            border-radius: 12px;
-            border: 2px solid transparent; 
-            cursor: pointer;
-            padding: 5px;
-            transition: all 0.2s;
+            width: 100%; height: 70px; object-fit: contain; background: rgba(0,0,0,0.4);
+            border-radius: 12px; border: 2px solid transparent; cursor: pointer; padding: 5px; transition: all 0.2s;
         }
-        
-        .admin-images img:hover {
-            background: rgba(255,255,255,0.1);
-        }
-        
+        .admin-images img:hover { background: rgba(255,255,255,0.1); }
         .admin-images img.selected { 
-            border-color: var(--primary); 
-            background: rgba(91, 192, 222, 0.15); 
-            box-shadow: 0 0 15px var(--primary-glow);
-            transform: scale(1.05);
+            border-color: var(--primary); background: rgba(91, 192, 222, 0.15);
+            box-shadow: 0 0 15px var(--primary-glow); transform: scale(1.05);
         }
 
-        /* Адаптивность */
         @media (max-height: 650px) {
             .character-container { height: 50vh; }
             .hp-container { top: 15px; }
@@ -724,7 +387,6 @@
 </head>
 <body>
 
-    <!-- ФОН -->
     <div class="bg-container">
         <div class="aurora"></div>
         <div class="stars"></div>
@@ -736,18 +398,15 @@
         <div id="snow-container"></div>
     </div>
 
-    <!-- ЗАГРУЗКА -->
     <div id="loading-screen">
         <div class="spinner"></div>
         <div class="loading-text">ЗАГРУЗКА...</div>
     </div>
 
-    <!-- КНОПКА МЕНЮ -->
     <div id="menu-btn" onclick="toggleMenu()">
         <div></div><div></div><div></div>
     </div>
 
-    <!-- БОКОВОЕ МЕНЮ -->
     <div id="sidebar">
         <div class="sidebar-title">Навигация</div>
         <div class="menu-item active" onclick="switchScreen('clicker')">
@@ -760,7 +419,6 @@
         </div>
     </div>
 
-    <!-- ЭКРАН: КЛИКЕР -->
     <div id="clicker-screen" class="screen active">
         <div class="hp-container">
             <div class="hp-bar-bg">
@@ -771,11 +429,10 @@
         
         <div class="character-container" id="char-container">
             <div class="character-glow"></div>
-            <img id="main-character" src="1.webp" alt="Character">
+            <img id="main-character" src="1.webp" alt="Character" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'300\'><rect width=\'300\' height=\'300\' fill=\'rgba(0,0,0,0.5)\' rx=\'20\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'white\' font-size=\'20\' font-family=\'sans-serif\'>Нет картинки</text></svg>'">
         </div>
     </div>
 
-    <!-- ЭКРАН: ПРОФИЛЬ -->
     <div id="profile-screen" class="screen">
         <div class="profile-card">
             <div class="avatar-container">
@@ -792,7 +449,6 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА: ПАРОЛЬ -->
     <div class="modal-overlay" id="password-modal">
         <div class="modal">
             <h2>Вход в Замок</h2>
@@ -802,19 +458,21 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА: АДМИН ПАНЕЛЬ -->
     <div class="modal-overlay" id="admin-modal">
         <div class="modal">
             <h2>Админ Панель</h2>
             
-            <label>Выберите персонажа:</label>
+            <label>Выберите персонажа (нажмите):</label>
             <div class="admin-images" id="admin-images-list">
-                <img src="1.webp" onclick="selectAdminImage(this, '1.webp')" class="selected">
-                <img src="2.webp" onclick="selectAdminImage(this, '2.webp')">
-                <img src="3.webp" onclick="selectAdminImage(this, '3.webp')">
-                <img src="4.webp" onclick="selectAdminImage(this, '4.webp')">
-                <img src="5.webp" onclick="selectAdminImage(this, '5.webp')">
+                <img src="1.webp" onclick="selectAdminImage(this, '1.webp')" class="selected" onerror="this.style.display='none'">
+                <img src="2.webp" onclick="selectAdminImage(this, '2.webp')" onerror="this.style.display='none'">
+                <img src="3.webp" onclick="selectAdminImage(this, '3.webp')" onerror="this.style.display='none'">
+                <img src="4.webp" onclick="selectAdminImage(this, '4.webp')" onerror="this.style.display='none'">
+                <img src="5.webp" onclick="selectAdminImage(this, '5.webp')" onerror="this.style.display='none'">
             </div>
+
+            <label>Или введите имя файла вручную:</label>
+            <input type="text" id="admin-custom-img" placeholder="1.webp">
 
             <label>Введите максимальное HP:</label>
             <input type="number" id="admin-hp" placeholder="Например: 1000000" value="1000000">
@@ -823,17 +481,17 @@
             <button class="close-btn" onclick="closeModal('admin-modal')">Закрыть</button>
         </div>
     </div>
+
     <script>
         // ==========================================
-        // ЗВУКИ (ОПЦИОНАЛЬНО)
+        // ЗВУКИ (ТВОИ ФОРМАТЫ: MP3 и WAV)
         // ==========================================
         function playSound(file) {
-            // Раскомментируй, если добавишь файлы .ogg в папку
-            /*
             try {
-                new Audio(file).play().catch(e => console.log("Audio error:", e));
+                const audio = new Audio(file);
+                audio.volume = 0.5;
+                audio.play().catch(e => console.log("Ошибка звука:", file));
             } catch(e) {}
-            */
         }
 
         // ==========================================
@@ -854,7 +512,7 @@
         }
 
         // ==========================================
-        // ЗАГРУЗКА (2 СЕКУНДЫ)
+        // ЗАГРУЗКА
         // ==========================================
         window.addEventListener('load', () => {
             setTimeout(() => {
@@ -871,17 +529,18 @@
         const sidebar = document.getElementById('sidebar');
 
         function toggleMenu() {
+            playSound('2.wav'); // Твой звук 2 (WAV)
             sidebar.classList.toggle('open');
             menuBtn.classList.toggle('open');
         }
 
         function switchScreen(screenName) {
+            playSound('2.wav'); // Твой звук 2 (WAV)
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
             
             document.getElementById(screenName + '-screen').classList.add('active');
             
-            // Подсветка активного пункта
             const items = document.querySelectorAll('.menu-item');
             items.forEach(item => {
                 if (item.getAttribute('onclick').includes(screenName)) {
@@ -889,13 +548,12 @@
                 }
             });
 
-            // Закрываем меню
             sidebar.classList.remove('open');
             menuBtn.classList.remove('open');
         }
 
         // ==========================================
-        // TELEGRAM ДАННЫЕ
+        // TELEGRAM
         // ==========================================
         const tg = window.Telegram?.WebApp;
         if (tg) {
@@ -911,7 +569,7 @@
         }
 
         // ==========================================
-        // ЛОГИКА КЛИКЕРА
+        // КЛИКЕР
         // ==========================================
         let currentImageName = '1.webp';
         let maxHP = 1000000;
@@ -941,7 +599,7 @@
 
         charContainer.addEventListener('pointerdown', (e) => {
             if (!isDead) {
-                playSound('1.ogg'); // Звук удара
+                playSound('1.mp3'); // Твой звук 1 (MP3)
 
                 let damage = 1;
                 let roll = Math.random() * 100;
@@ -958,7 +616,7 @@
                 updateUI();
                 saveClickToDatabase(damage);
             } else {
-                playSound('3.ogg'); // Звук "уже мертв"
+                playSound('3.wav'); // Твой звук 3 (WAV)
                 showDeadMessage(e.clientX, e.clientY);
             }
         });
@@ -966,10 +624,7 @@
         function showDamageText(x, y, dmg) {
             const el = document.createElement('div');
             el.className = 'damage-text';
-            
-            // Если урон большой - делаем его золотым (крит)
             if (dmg >= 50) el.classList.add('damage-crit');
-
             el.innerText = '-' + dmg;
             el.style.left = (x - 20) + 'px';
             el.style.top = (y - 20) + 'px';
@@ -988,7 +643,7 @@
         }
 
         // ==========================================
-        // БАЗА ДАННЫХ FIREBASE
+        // FIREBASE
         // ==========================================
         function initDatabase() {
             const { db, ref, onValue, set } = window.gameDB;
@@ -1000,14 +655,12 @@
                         if (data.maxHP !== undefined) maxHP = data.maxHP;
                         if (data.currentHP !== undefined) currentHP = data.currentHP;
                         
-                        // Загрузка картинки (теперь .webp)
                         if (data.image && data.image !== currentImageName) {
                             currentImageName = data.image;
                             mainCharacter.src = currentImageName;
                         }
                         updateUI();
                     } else {
-                        // Первичная настройка
                         set(ref(db, 'game/'), {
                             maxHP: 1000000,
                             currentHP: 1000000,
@@ -1016,7 +669,7 @@
                     }
                 });
             } else {
-                updateUI(); // Локальный режим, если Firebase не подключился
+                updateUI();
             }
         }
 
@@ -1030,25 +683,25 @@
             }
         }
 
-        // Запуск БД
         setTimeout(initDatabase, 1000);
 
         // ==========================================
         // АДМИНКА
         // ==========================================
         function openAdminPassword() {
-            playSound('2.ogg');
+            playSound('2.wav');
             document.getElementById('password-modal').classList.add('active');
             document.getElementById('admin-pass').value = '';
         }
 
         function checkPassword() {
             const pass = document.getElementById('admin-pass').value;
-            // Пароль: Самир2014
             if (pass === 'Самир2014') {
+                playSound('2.wav');
                 closeModal('password-modal');
                 document.getElementById('admin-modal').classList.add('active');
                 document.getElementById('admin-hp').value = maxHP;
+                document.getElementById('admin-custom-img').value = currentImageName;
             } else {
                 if (tg) tg.showAlert("Неверный пароль!");
                 else alert("Неверный пароль!");
@@ -1062,34 +715,38 @@
         let selectedImageName = '1.webp';
 
         function selectAdminImage(imgElement, name) {
-            playSound('2.ogg');
+            playSound('2.wav');
             document.querySelectorAll('#admin-images-list img').forEach(i => i.classList.remove('selected'));
             imgElement.classList.add('selected');
             selectedImageName = name;
+            document.getElementById('admin-custom-img').value = name;
         }
 
         function applyAdminSettings() {
             const newHP = parseInt(document.getElementById('admin-hp').value);
+            const customImg = document.getElementById('admin-custom-img').value.trim();
+
             if (!newHP || newHP <= 0) {
                 if (tg) tg.showAlert("Введите корректное число HP!");
                 else alert("Введите корректное число HP!");
                 return;
             }
 
+            const finalImage = customImg ? customImg : selectedImageName;
             const { db, ref, set } = window.gameDB;
 
             if (db) {
                 set(ref(db, 'game/'), {
                     maxHP: newHP,
                     currentHP: newHP,
-                    image: selectedImageName
+                    image: finalImage
                 });
                 if (tg) tg.showAlert("Глобальные настройки применены!");
                 else alert("Глобальные настройки применены!");
             } else {
                 maxHP = newHP;
                 currentHP = newHP;
-                currentImageName = selectedImageName;
+                currentImageName = finalImage;
                 mainCharacter.src = currentImageName;
                 updateUI();
                 if (tg) tg.showAlert("Настройки применены локально!");
